@@ -1,0 +1,56 @@
+# Esquema de referencia de las operaciones que MSW simula.
+# No requiere levantar un servidor GraphQL real.
+type Query {
+  flights(destinationId: ID!): [Flight!]!
+  hotels(destinationId: ID!): [Hotel!]!
+}
+
+type Mutation {
+  createInquiry(input: InquiryInput!): Inquiry!
+}
+
+type Flight {
+  id: ID!
+  destinationId: ID!
+  airline: String!
+  flightNumber: String!
+  origin: String!
+  destination: String!
+  destinationAirport: String!
+  departureDate: String!
+  returnDate: String!
+  departureTime: String!
+  duration: String!
+  stops: Int!
+  price: Int!
+  seatsAvailable: Int!
+}
+
+type Hotel {
+  id: ID!
+  destinationId: ID!
+  name: String!
+  location: String!
+  rating: Float!
+  stars: Int!
+  image: String!
+  pricePerNight: Int!
+  availableRooms: Int!
+  availableFrom: String!
+  availableUntil: String!
+  amenities: [String!]!
+}
+
+input InquiryInput {
+  destinationId: ID!
+  flightId: ID!
+  hotelId: ID!
+  travelerName: String!
+  travelerEmail: String!
+}
+
+type Inquiry {
+  id: ID!
+  status: String!
+  message: String!
+}
