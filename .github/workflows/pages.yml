@@ -1,41 +1,62 @@
+
 name: Publicar AURA Travel en GitHub Pages
+
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
+
 permissions:
   contents: read
   pages: write
   id-token: write
+
 concurrency:
-  group: pages
-  cancel-in-progress: true
+  group: github-pages
+  cancel-in-progress: false
+
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
+    name: Compilar aplicacion
     runs-on: ubuntu-latest
+
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
-      - name: Configurar Node
+
+      - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Instalar dependencias y generar el service worker
+
+      - name: Instalar dependencias
         run: npm install --no-audit --no-fund
-      - name: Compilar con ruta de GitHub Pages
+
+      - name: Compilar para GitHub Pages
         env:
           GITHUB_PAGES: 'true'
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: npm run build
-      - name: Configurar Pages
+
+      - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
-      - name: Subir sitio
-        uses: actions/upload-pages-artifact@v3
+
+      - name: Subir archivos compilados
+        uses: actions/upload-pages-artifact@v4
         with:
-          path: dist
-      - name: Publicar
+          path: ./dist
+
+  deploy:
+    name: Publicar sitio web
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Desplegar en GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
